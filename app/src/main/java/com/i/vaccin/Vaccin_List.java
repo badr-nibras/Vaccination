@@ -44,6 +44,7 @@ public class Vaccin_List extends AppCompatActivity {
     String UserID;
     String TAG = "Vaccin_List";
     private FirestoreRecyclerAdapter adapter;
+    //List<VaccinModel> vaccinModel = new ArrayList<>();
 
 
     @Override
@@ -57,17 +58,40 @@ public class Vaccin_List extends AppCompatActivity {
         fStore = FirebaseFirestore.getInstance();
         UserID = fAuth.getCurrentUser().getUid();
 
-        DocumentReference documentReference = fStore.collection("users").document(UserID);
+        final DocumentReference documentReference = fStore.collection("users").document(UserID);
         Query vaccinCollection =  fStore.collection("Vaccin");
         FirestoreRecyclerOptions<VaccinModel> options = new FirestoreRecyclerOptions.Builder<VaccinModel>().setQuery(vaccinCollection, VaccinModel.class).build();
 
         documentReference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException error) {
-                Fullname.setText("Hi, " + documentSnapshot.getString("Full Name"));
-            }
-        });
+                try {
+                    Fullname.setText("Hi, " + documentSnapshot.getString("Full Name"));
+                } catch (Exception e){
+                    System.out.println(e);
+                }
 
+            }
+
+        });
+/*
+        vaccinCollection
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Log.d(TAG, document.getId() + " => " + document.getData());
+                                VaccinModel item = new VaccinModel(String.valueOf(document.getString("Name")), Integer.parseInt(document.getString("Dose number")));
+                                vaccinModel.add(item);
+                            }
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+*/
         adapter = new FirestoreRecyclerAdapter<VaccinModel, VaccinViewHolder>(options) {
             @NonNull
             @Override
@@ -79,48 +103,30 @@ public class Vaccin_List extends AppCompatActivity {
             @Override
             protected void onBindViewHolder(@NonNull VaccinViewHolder holder, int position, @NonNull VaccinModel model) {
                 holder.VaccinName.setText(model.getName());
-                holder.Dose.setText(model.getDose());
+                holder.Doze.setText(model.getDoze()+"");
 
             }
         };
 
-
         VaccinList.setHasFixedSize(true);
         VaccinList.setLayoutManager(new LinearLayoutManager(this));
         VaccinList.setAdapter(adapter);
-
-
-
-       /* vaccinCollection
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                Log.d(TAG, document.getId() + " => " + document.getData());
-                            }
-                        } else {
-                            Log.d(TAG, "Error getting documents: ", task.getException());
-                        }
-                    }
-                });*/
 
     }
 
     private class VaccinViewHolder extends RecyclerView.ViewHolder{
 
         private TextView VaccinName;
-        private TextView Dose;
+        private TextView Doze;
 
         public VaccinViewHolder(@NonNull View itemView) {
             super(itemView);
             VaccinName = itemView.findViewById(R.id.Name);
-            Dose = itemView.findViewById(R.id.Dose);
+            Doze = itemView.findViewById(R.id.Doze);
         }
     }
 
-    /*@Override
+    @Override
     protected void onStop(){
         super.onStop();
         adapter.stopListening();
@@ -130,7 +136,7 @@ public class Vaccin_List extends AppCompatActivity {
     protected void onStart(){
         super.onStart();
         adapter.startListening();
-    }*/
+    }
 
     public void SignOut(View view) {
         FirebaseAuth.getInstance().signOut();

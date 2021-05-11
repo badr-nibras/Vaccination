@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
@@ -24,7 +25,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Register extends AppCompatActivity {
+public class Register extends AppCompatActivity implements View.OnFocusChangeListener {
 
     EditText Email, Password, FullName, Birthday, ConfirmerPass;
     FirebaseAuth Auth;
@@ -32,6 +33,7 @@ public class Register extends AppCompatActivity {
     String UserID;
     private RadioGroup radioSexGroup;
     private RadioButton radioSexButton;
+    MaterialDatePicker datePicker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,15 +44,29 @@ public class Register extends AppCompatActivity {
         Password = findViewById(R.id.Password);
         ConfirmerPass = findViewById(R.id.editTextTextPassword2);
         FullName = findViewById(R.id.PersonName);
-        Birthday = findViewById(R.id.editTextDate2);
+        Birthday = findViewById(R.id.Birthday);
         FStore = FirebaseFirestore.getInstance();
         Auth = FirebaseAuth.getInstance();
         radioSexGroup = (RadioGroup) findViewById(R.id.radioGroup);
+
+        MaterialDatePicker.Builder builder = MaterialDatePicker.Builder.datePicker();
+        builder.setTitleText("Birthday");
+        datePicker = builder.build();
+
+        Birthday.setOnFocusChangeListener(this);
+
+
 
        /* if (Auth.getCurrentUser() != null) {
             startActivity(new Intent(getApplicationContext(), MainActivity.class));
             finish();
         }*/
+    }
+
+
+    public void date(View view){
+        datePicker.show(getSupportFragmentManager(), "DATE_PICKER");
+        //Birthday.setText(datePicker.getHeaderText());
     }
     public void register(View view){
         String email = Email.getText().toString().trim();
@@ -96,7 +112,6 @@ public class Register extends AppCompatActivity {
                     User.put("Full Name", fullName);
                     User.put("Birthday", birthday);
                     User.put("Sex", radioSexButton.getText());
-                    //User.put("Gender", Gender);
                     documentReference.set(User).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
@@ -116,5 +131,12 @@ public class Register extends AppCompatActivity {
     public void login(View view){
         startActivity(new Intent(getApplicationContext(), Login.class));
     }
+
+    @Override
+    public void onFocusChange(View view, boolean b) {
+        if(b) datePicker.show(getSupportFragmentManager(), "DATE_PICKER");
+
+    }
+
 }
 

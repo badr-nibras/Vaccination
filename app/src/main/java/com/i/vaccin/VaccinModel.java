@@ -3,21 +3,13 @@ package com.i.vaccin;
 public class VaccinModel {
 
     private String Name;
-    private int Dose;
+    private int Doze;
 
     private VaccinModel(){}
 
-    public VaccinModel(String name, int dose) {
-        this.Name = name;
-        this.Dose = dose;
-    }
-
-    public int getDose() {
-        return Dose;
-    }
-
-    public void setDose(int dose) {
-        Dose = dose;
+    public VaccinModel(String Name, int Doze) {
+        this.Name = Name;
+        this.Doze = Doze;
     }
 
     public String getName() {
@@ -26,5 +18,13 @@ public class VaccinModel {
 
     public void setName(String name) {
         Name = name;
+    }
+
+    public int getDoze() {
+        return Doze;
+    }
+
+    public void setDoze(int doze) {
+        Doze = doze;
     }
 }
